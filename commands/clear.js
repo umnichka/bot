@@ -4,7 +4,7 @@ const { MessageEmbed } = require('discord.js');
 module.exports = {
 
     name: "clear",
-    description: "Clears messages",
+    description: "Clear messages",
 
     async run (client, message, args) {
 

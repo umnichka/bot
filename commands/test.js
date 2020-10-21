@@ -4,7 +4,7 @@ const fs = require("fs");
 
 module.exports = {
     name: 'test',
-    description: "test",
+    description: "test command",
 
     async run (client, message, args) {
 

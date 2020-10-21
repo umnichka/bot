@@ -3,7 +3,7 @@ const { MessageEmbed } = require('discord.js');
 
 module.exports = {
     name: 'invite',
-    description: "invite command",
+    description: "invite command. !invite [Duration] [Uses]",
 
     async run (client, message , args){
 
