@@ -1,0 +1,16 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "description": "discord bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "smoke",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^12.3.1",
+    "es6-promise": "^4.2.8",
+    "isomorphic-fetch": "^3.0.0"
+  }
+}
