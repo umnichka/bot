@@ -5,7 +5,9 @@ const client = new Discord.Client();
 const fs = require('fs');  
 const { join } = require('path');
 
-const prefix = ('!')
+const config = require('./config.json');
+
+const prefix = (config.prefix)
 
 
 client.commands= new Discord.Collection();
