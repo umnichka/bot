@@ -3,6 +3,7 @@ const { MessageEmbed } = require('discord.js');
 module.exports = {
     name: "userinfo",
     description: "Shows information about user",
+    usage: "!userinfo [user]",
 
     async run (client, message , args) {
 

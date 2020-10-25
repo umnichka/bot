@@ -4,6 +4,7 @@ const { MessageEmbed } = require('discord.js');
 module.exports = {
     name: "serverinfo",
     description: "Shows infromation about server",
+    usage: "!serverinfo",
      async run (client, message, args) {
 
         let voiceChannelCount = message.guild.channels.cache.filter(c => c.type === 'voice').size;

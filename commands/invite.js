@@ -3,7 +3,9 @@ const { MessageEmbed } = require('discord.js');
 
 module.exports = {
     name: 'invite',
-    description: "invite command. !invite [Duration] [Uses]",
+    description: "Create invite code for this guild",
+    usage: "!invite [Duration] [Uses]",
+
 
     async run (client, message , args){
 

@@ -5,9 +5,11 @@ module.exports = {
 
     name: "clear",
     description: "Clear messages",
+    usage: "!clear <amount>",
 
     async run (client, message, args) {
 
+        if(!message.member.hasPermission("MANAGE_MESSAGES")) return message.reply('you dont have perms to do that')
 
         const amount = args.join(" ");
 
