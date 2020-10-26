@@ -1,0 +1,9 @@
+{
+    "gamemode": [
+        {
+            "name": "rankedallpick",
+            "id": "22",
+            "localized_name": "Ranked All Pick"
+        }
+    ]
+}

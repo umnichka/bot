@@ -13,6 +13,7 @@
     "discord.js": "^12.3.1",
     "es6-promise": "^4.2.8",
     "isomorphic-fetch": "^3.0.0",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "time-convert": "0.0.2"
   }
 }

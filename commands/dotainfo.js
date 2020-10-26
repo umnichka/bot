@@ -12,7 +12,7 @@ module.exports = {
 	async run (client, message,args) {
 
         if (talkedRecently.has(message.author.id)) {
-            message.reply("Wait 5 secs before getting typing this again.");
+            message.reply("Wait 5 secs before using this command again.");
     } else {
         let SteamId64 = args[0];
         let SteamId32 = bignumber(SteamId64).minus('76561197960265728')
@@ -30,11 +30,12 @@ module.exports = {
                 let idsteam = data.profile.steamid;
                 let steamurl = "https://steamcommunity.com/profiles/"
                 let usersteam = steamurl.concat(idsteam); 
-                let solommr = data.solo_competitive_rank;
+                let mmr = data.mmr_estimate.estimate;
                 let rank = data.rank_tier;
                 let leaderboardrank = data.leaderboard_rank;
                 let avatar = data.profile.avatarmedium;
-                let username = data.profile.name;
+                let username = data.profile.personaname;
+
 
                 request(urlWL,function(error,response,body ) {
                     console.log(urlWL);
@@ -50,7 +51,7 @@ module.exports = {
                         .setThumbnail(avatar)
                         .setColor('f3f3f3')
                         .setTitle(`${username} profile`)
-                        .addField('Solo MMR ', solommr,true)
+                        .addField('MMR~ ', mmr,true)
                         .addField('Leaderboard rank ', leaderboardrank,true )
                         .addField('Dota tier ', rank,true)
                         .addField('Wins', wins,true)
