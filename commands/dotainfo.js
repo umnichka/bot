@@ -6,9 +6,9 @@ const { MessageEmbed } = require('discord.js');
 const bignumber = require('bignumber.js');
 
 module.exports = {
-	name: 'Dotap',
+	name: 'dotap',
 	description: 'Shows information about dota user.',
-	usage: '!Dotap <steamid>',
+	usage: '!dotap <steamid>',
 	async run (client, message,args) {
 
         if (talkedRecently.has(message.author.id)) {
