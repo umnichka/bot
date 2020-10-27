@@ -8,14 +8,16 @@ const bignumber = require('bignumber.js');
 module.exports = {
 	name: 'dotap',
 	description: 'Shows information about dota user.',
-	usage: '!dotap <steamid>',
+	usage: '!dotap <profileURL>',
 	async run (client, message,args) {
 
         if (talkedRecently.has(message.author.id)) {
             message.reply("Wait 5 secs before using this command again.");
     } else {
-        let SteamId64 = args[0];
-        let SteamId32 = bignumber(SteamId64).minus('76561197960265728')
+
+        var steamUrl = args[0];
+        var cSteamUrl = steamUrl.replace(/\D/g, "");
+        let SteamId32 = bignumber(cSteamUrl).minus('76561197960265728')
 		let requestUrl = "http://api.opendota.com/api/players/";
         let url = requestUrl.concat(SteamId32);
         let urlWL = url.concat('/wl')

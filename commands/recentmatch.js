@@ -7,6 +7,7 @@ const bignumber = require('bignumber.js');
 const heroData = require('./data/heroes.json');
 const modeData = require('./data/gamemodes.json');
 const helper = require('./helper/helper.js');
+const skilllvl = require('./data/skill.json')
 const { ms, s, m, h, d } = require('time-convert')
 const { milliseconds, seconds, minutes, hours, days } = require('time-convert') 
 
@@ -20,11 +21,22 @@ module.exports = {
             message.reply("Wait 5 secs before using this command again.");
 
         } else {
-            let SteamId64 = args[0];
-            let SteamId32 = bignumber(SteamId64).minus('76561197960265728')
+            var steamUrl = args[0];
+            var cSteamUrl = steamUrl.replace(/\D/g, "");
+            let SteamId32 = bignumber(cSteamUrl).minus('76561197960265728')
             let requestUrl = "http://api.opendota.com/api/players/";
             let url = requestUrl.concat(SteamId32);
             let urlrecent = url.concat('/recentMatches')
+
+            request(url,function(eror, response,body) {
+                console.log(url);
+                let data = JSON.parse(body);
+                if (data.error == 'Internal Server Error' || typeof data.profile == 'undefined') {
+                    message.channel.send('Error, invalid ID');
+
+            } else {
+
+            let username = data.profile.personaname
 
             request(urlrecent, function (error, response, body) {
                 console.log(urlrecent);
@@ -45,6 +57,7 @@ module.exports = {
                             GameMode = mode.localized_name;
                         }
                     }
+
                     let matchid = data[0].match_id;
                     let gameurl = "https://www.opendota.com/matches/" + matchid;
                     let result = helper.resultOfLastMatch(data[0].radiant_win, data[0].player_slot);
@@ -65,7 +78,7 @@ module.exports = {
 
                     const match = new MessageEmbed()
                     .setColor('f3f3f3')
-                    .setTitle('Username recent match')
+                    .setTitle(`${username} recent match`)
                     .setFooter(value)
                     .addField('Game link:', `[Click](${gameurl})`,false )
                     .addField('Gamemode', GameMode, true)
@@ -86,6 +99,8 @@ module.exports = {
                       talkedRecently.delete(message.author.id);
                     }, 5000);
                 }
+            });
+        }
             });
         }
     }

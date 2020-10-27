@@ -1,0 +1,19 @@
+{
+    "Lskill": [
+        {
+            "name": "normal",
+            "id": "1",
+            "localized_name": "Normal"
+        },
+        {
+            "name": "High",
+            "id": "2",
+            "localized_name": "High"
+        },
+        {
+            "name": "Very High",
+            "id": "3",
+            "localized_name": "Very High"
+        }
+    ]
+}
