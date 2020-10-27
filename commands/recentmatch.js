@@ -7,11 +7,8 @@ const bignumber = require('bignumber.js');
 const heroData = require('./data/heroes.json');
 const modeData = require('./data/gamemodes.json');
 const helper = require('./helper/helper.js');
-const skilllvl = require('./data/skill.json')
-const { ms, s, m, h, d } = require('time-convert')
-const { milliseconds, seconds, minutes, hours, days } = require('time-convert') 
 
-module.exports = {
+ module.exports = {
 	name: 'recentm',
 	description: 'Shows information about 20 recent matchs of dota player.',
 	usage: '!recentm <steamid>',

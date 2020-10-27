@@ -4,6 +4,7 @@ const request = require('request');
 const talkedRecently = new Set();
 const { MessageEmbed } = require('discord.js');
 const bignumber = require('bignumber.js');
+const helper = require('./helper/helper.js');
 
 module.exports = {
 	name: 'dotap',
@@ -59,7 +60,22 @@ module.exports = {
                         .addField('Wins', wins,true)
                         .addField('Loses', loses,true)
                         .addField('Steam profile:',`[Click](${usersteam})`)
+                        .addField('Actions', '`recentm`')
                         message.channel.send(stats)
+
+                        client.on("message", async message => {
+
+                            if(message.author.bot) return;
+                            if(message.channel.type === 'dm') return;
+
+                            if(message.content === 'recentm') {
+                               let dotarecent = (helper.recentMatch(SteamId32,username));
+                               console.log(dotarecent);
+                               message.channel.send(dotarecent)
+                            }
+                          
+                        });
+
 
                         talkedRecently.add(message.author.id);
                         setTimeout(() => {
