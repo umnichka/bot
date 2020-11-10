@@ -58,7 +58,7 @@ module.exports = {
                         .addField('Leaderboard rank ', leaderboardrank,true )
                         .addField('Dota tier ', rank,true)
                         .addField('Wins', wins,true)
-                        .addField('Loses', loses,true)
+                        .addField('Loses',loses,true)
                         .addField('Steam profile:',`[Click](${usersteam})`)
                         .addField('Actions', '`recentm`')
                         message.channel.send(stats)
@@ -69,11 +69,9 @@ module.exports = {
                             if(message.channel.type === 'dm') return;
 
                             if(message.content === 'recentm') {
-                               let dotarecent = (helper.recentMatch(SteamId32,username));
-                               console.log(dotarecent);
+                                let dotarecent = await (helper.recentMatch(SteamId32,username));
                                message.channel.send(dotarecent)
                             }
-                          
                         });
 
 

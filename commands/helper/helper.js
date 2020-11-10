@@ -2,7 +2,7 @@ const heroData = require('./data/heroes.json');
 const modeData = require('./data/gamemodes.json');
 const request = require('request');
 const Discord = require('discord.js'); 
-
+const fetch = require("node-fetch");
 const { MessageEmbed } = require('discord.js');
 
 function resultOfMatch(result) {
@@ -36,15 +36,14 @@ function resultOfLastMatch(result, playerslot) {
 exports.resultOfLastMatch = resultOfLastMatch;
 
 
-function recentMatch(SteamId32,username)
+async function recentMatch(SteamId32,username)
 {
     let requestUrl = "http://api.opendota.com/api/players/";
     let url = requestUrl.concat(SteamId32);
-    let urlrecent = url.concat('/recentMatches')
-
-    request(urlrecent, function (error, response, body) {
+    let urlrecent = url.concat('/recentMatches');
+    let response = await fetch(urlrecent);
+    let data = await response.json();
         console.log(urlrecent);
-        let data = JSON.parse(body);
 
         if ( typeof data[0] == 'undefined') {
             message.channel.send('Error, invalid ID');
@@ -73,16 +72,18 @@ function recentMatch(SteamId32,username)
             let kills = data[0].kills;
             let deaths = data[0].deaths;
             let assist = data[0].assists;
-            let value = data[0].duration;
-            
-            
-            
-            
+            let value1 = data[0].duration;
+            let value = value1 / 60;
+            let minutes = Math.floor(value);
+            let seconds = (value - minutes) * 60;
+            let seconds2 = Math.round(seconds)
+            let duration = `${minutes} m ${seconds2} s `
             console.log(gameurl);
-            var match = new MessageEmbed()
+
+            const embed = new MessageEmbed()
             .setColor('f3f3f3')
             .setTitle(`${username} recent match`)
-            .setFooter(value)
+            .setFooter(duration)
             .addField('Game link:', `[Click](${gameurl})`,false )
             .addField('Gamemode', GameMode, true)
             .addField('Result', result, true)
@@ -94,18 +95,21 @@ function recentMatch(SteamId32,username)
             .addField('Kills', kills, true)
             .addField('Deaths', deaths , true)
             .addField('Assists', assist, true)
-
-            function RecentMatch(){
-                
-                return match;
-
-            }
-
-            
+            return embed
 
         }
-    })
-    return rmatch;
 }
 
 exports.recentMatch = recentMatch;
+
+
+function createCollectorMessage(message, getList) {
+    let i = 0;
+    const collector = message.createReactionCollector(filter, { time: 6000 });
+    collector.on('collect', r => {
+      i = onCollect(r.emoji, message, i, getList);
+    });
+    collector.on('end', collected => message.clearReactions());
+  }
+
+exports.createCollectorMessage = createCollectorMessage;
