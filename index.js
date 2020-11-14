@@ -7,6 +7,7 @@ const { join } = require('path');
 const config = require('./config.json');
 
 const prefix = (config.prefix)
+const token = (config.token)
 
 
 client.commands= new Discord.Collection();
@@ -47,5 +48,4 @@ client.on("message", async message => {
       }
   }
 })
-
-client.login(process.env.token);
+client.login(process.env.token) // process.env.token) 
