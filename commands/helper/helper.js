@@ -4,6 +4,7 @@ const request = require('request');
 const Discord = require('discord.js'); 
 const fetch = require("node-fetch");
 const { MessageEmbed } = require('discord.js');
+const bignumber = require('bignumber.js');
 
 function resultOfMatch(result) {
     if (result == true) {
@@ -36,7 +37,7 @@ function resultOfLastMatch(result, playerslot) {
 exports.resultOfLastMatch = resultOfLastMatch;
 
 
-async function recentMatch(SteamId32,username)
+async function recentMatch(SteamId32,username, callback)
 {
     let requestUrl = "http://api.opendota.com/api/players/";
     let url = requestUrl.concat(SteamId32);
@@ -95,21 +96,53 @@ async function recentMatch(SteamId32,username)
             .addField('Kills', kills, true)
             .addField('Deaths', deaths , true)
             .addField('Assists', assist, true)
-            return embed
+
+            callback(embed);
 
         }
 }
 
 exports.recentMatch = recentMatch;
 
+async function DotaProfile(SteamId32, callback) {
+    
+    let requestUrl = "http://api.opendota.com/api/players/";
+    let url = requestUrl.concat(SteamId32);
+    let wlURL = url.concat('/wl')
+    let response = await fetch(url);
+    let data = await response.json();
+    let response2 = await fetch(wlURL);
+    let data2 = await response2.json();
+        console.log(url);
+        
+        if ( typeof data == 'undefined') {
+            message.channel.send('Error, invalid ID');
 
-function createCollectorMessage(message, getList) {
-    let i = 0;
-    const collector = message.createReactionCollector(filter, { time: 6000 });
-    collector.on('collect', r => {
-      i = onCollect(r.emoji, message, i, getList);
-    });
-    collector.on('end', collected => message.clearReactions());
-  }
+        } else {
 
-exports.createCollectorMessage = createCollectorMessage;
+            let idsteam = data.profile.steamid;
+            let steamurl = "https://steamcommunity.com/profiles/"
+            let usersteam = steamurl.concat(idsteam); 
+            let mmr = data.mmr_estimate.estimate;
+            let rank = data.rank_tier;
+            let leaderboardrank = data.leaderboard_rank;
+            let avatar = data.profile.avatarmedium;
+            let username = data.profile.personaname;
+
+            const stats = new MessageEmbed()
+
+                    .setThumbnail(avatar)
+                    .setColor('f3f3f3')
+                    .setTitle(`${username} profile`)
+                    .addField('MMR~ ', mmr,true)
+                    .addField('Leaderboard rank ', leaderboardrank,true )
+                    .addField('Dota tier ', rank,true)
+                    .addField('Wins', data2.win,true)
+                    .addField('Lose',data2.lose,true)
+                    .addField('Steam profile:',`[Click](${usersteam})`)
+                    .addField('Actions', '`recentm`')
+
+                    callback(stats);
+    }
+}
+exports.DotaProfile = DotaProfile;

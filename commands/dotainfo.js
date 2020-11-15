@@ -5,6 +5,7 @@ const talkedRecently = new Set();
 const { MessageEmbed } = require('discord.js');
 const bignumber = require('bignumber.js');
 const helper = require('./helper/helper.js');
+const fetch = require("node-fetch");
 
 module.exports = {
 	name: 'dotap',
@@ -16,75 +17,58 @@ module.exports = {
             message.reply("Wait 5 secs before using this command again.");
     } else {
 
-        var steamUrl = args[0];
-        var cSteamUrl = steamUrl.replace(/\D/g, "");
-        let SteamId32 = bignumber(cSteamUrl).minus('76561197960265728')
-		let requestUrl = "http://api.opendota.com/api/players/";
-        let url = requestUrl.concat(SteamId32);
-        let urlWL = url.concat('/wl')
+        var steamLink = args[0];
+        var steamID = steamLink.split('/')
+        let requestUrl = "http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=11C25DD94021AB4F6607D25893C04D7D&vanityurl="
+        
+        let steamId64 = [];
+        let steam64 = [];
+        let steamid32 = [];
+        let x = [1];
+        console.log(steamid32)
 
-        request(url, function (error, response, body) {
-            console.log(url);
-            let data = JSON.parse(body);
-            if (data.error == 'Internal Server Error' || typeof data.profile == 'undefined') {
-                message.channel.send('Error, invalid ID');
+        if(steamID[3] === 'id') {
 
-            } else {
-                let idsteam = data.profile.steamid;
-                let steamurl = "https://steamcommunity.com/profiles/"
-                let usersteam = steamurl.concat(idsteam); 
-                let mmr = data.mmr_estimate.estimate;
-                let rank = data.rank_tier;
-                let leaderboardrank = data.leaderboard_rank;
-                let avatar = data.profile.avatarmedium;
-                let username = data.profile.personaname;
+            let url = requestUrl + steamID[4];
+            let response = await fetch(url);
+            let data = await response.json();
+            const steamId1 = data.response.steamid;
+            x++;
+            steamId64.push(steamId1);
+            console.log('ID 64 = ', steamId1);
 
+        } else  {
+            console.log(x)
+            steam64.push(steamID[4]);
+            console.log('PROFILES 64 =',steam64)
+        }
 
-                request(urlWL,function(error,response,body ) {
-                    console.log(urlWL);
-                    let data = JSON.parse(body);
-                    if (data.error == 'Internal Server Error') {
-                        message.channel.send('try later');
-                    }
-                    else {
-                        let wins = data.win;
-                        let loses = data.lose;
+        if (x != 2) {
+            let SteamId32 = bignumber(steam64).minus('76561197960265728')
+            console.log('big numb', steam64)
+            steamid32.push(SteamId32)
+            console.log(SteamId32)
+        } else {
+            let SteamId32 = bignumber(steamId64).minus('76561197960265728')
+            console.log('big nubme2',steamId64)
+            steamid32.push(SteamId32)
+            console.log(SteamId32)
+        }
 
-                        const stats = new MessageEmbed()
-                        .setThumbnail(avatar)
-                        .setColor('f3f3f3')
-                        .setTitle(`${username} profile`)
-                        .addField('MMR~ ', mmr,true)
-                        .addField('Leaderboard rank ', leaderboardrank,true )
-                        .addField('Dota tier ', rank,true)
-                        .addField('Wins', wins,true)
-                        .addField('Loses',loses,true)
-                        .addField('Steam profile:',`[Click](${usersteam})`)
-                        .addField('Actions', '`recentm`')
-                        message.channel.send(stats)
-
-                        client.on("message", async message => {
-
-                            if(message.author.bot) return;
-                            if(message.channel.type === 'dm') return;
-
-                            if(message.content === 'recentm') {
-                                let dotarecent = await (helper.recentMatch(SteamId32,username));
-                               message.channel.send(dotarecent)
-                            }
-                        });
+        await helper.DotaProfile(steamid32, function (stats){
+            message.channel.send(stats)
+        })
 
 
-                        talkedRecently.add(message.author.id);
-                        setTimeout(() => {
-                          // Removes the user from the set after a minute
-                          talkedRecently.delete(message.author.id);
-                        }, 5000);
-                    }
-                })
+
+             talkedRecently.add(message.author.id);
+                setTimeout(() => {
+                    // Removes the user from the set after a minute
+                talkedRecently.delete(message.author.id);
+                 }, 5000);
+
+
+
+                }
             }
-		});
-    }
-}
-}
-	
+        }
