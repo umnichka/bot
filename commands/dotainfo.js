@@ -6,6 +6,9 @@ const { MessageEmbed } = require('discord.js');
 const bignumber = require('bignumber.js');
 const helper = require('./helper/helper.js');
 const fetch = require("node-fetch");
+const msg = { createdAt : new Date() };
+const time = msg.createdAt.toLocaleString();
+
 
 module.exports = {
 	name: 'dotap',
@@ -16,6 +19,10 @@ module.exports = {
         if (talkedRecently.has(message.author.id)) {
             message.reply("Wait 5 secs before using this command again.");
     } else {
+
+
+        const filter = message => message.content.includes('profile','recentm');
+        const collector = message.channel.createMessageCollector(filter, { time: 15000 });
 
         var steamLink = args[0];
         var steamID = steamLink.split('/')
@@ -55,9 +62,28 @@ module.exports = {
             console.log(SteamId32)
         }
 
-        await helper.DotaProfile(steamid32, function (stats){
-            message.channel.send(stats)
-        })
+
+
+        helper.DotaMenu(steamid32, function (menu){
+            
+
+        message.channel.send(menu).then(() => {
+            collector.on('collect', message => {
+                console.log(message.content)
+                if (message.content === 'profile')
+                {
+                    helper.DotaProfile(steamid32, function (stats){
+                        message.channel.send(stats)
+                    })
+                }
+                else if (message.content === 'recentm') {
+                    helper.recentMatch(steamid32, function(embed){
+                        message.channel.send(embed)
+                    })
+                }
+            })
+        });
+    })
 
 
 

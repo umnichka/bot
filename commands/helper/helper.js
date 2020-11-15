@@ -5,6 +5,7 @@ const Discord = require('discord.js');
 const fetch = require("node-fetch");
 const { MessageEmbed } = require('discord.js');
 const bignumber = require('bignumber.js');
+const client = new Discord.Client();
 
 function resultOfMatch(result) {
     if (result == true) {
@@ -37,10 +38,10 @@ function resultOfLastMatch(result, playerslot) {
 exports.resultOfLastMatch = resultOfLastMatch;
 
 
-async function recentMatch(SteamId32,username, callback)
+async function recentMatch(steamid32, callback)
 {
     let requestUrl = "http://api.opendota.com/api/players/";
-    let url = requestUrl.concat(SteamId32);
+    let url = requestUrl.concat(steamid32);
     let urlrecent = url.concat('/recentMatches');
     let response = await fetch(urlrecent);
     let data = await response.json();
@@ -83,7 +84,7 @@ async function recentMatch(SteamId32,username, callback)
 
             const embed = new MessageEmbed()
             .setColor('f3f3f3')
-            .setTitle(`${username} recent match`)
+            .setTitle(`Recent match`)
             .setFooter(duration)
             .addField('Game link:', `[Click](${gameurl})`,false )
             .addField('Gamemode', GameMode, true)
@@ -140,9 +141,23 @@ async function DotaProfile(SteamId32, callback) {
                     .addField('Wins', data2.win,true)
                     .addField('Lose',data2.lose,true)
                     .addField('Steam profile:',`[Click](${usersteam})`)
-                    .addField('Actions', '`recentm`')
+                    .addField('Actions', '`back`')
 
                     callback(stats);
     }
 }
 exports.DotaProfile = DotaProfile;
+
+async function DotaMenu(steamid32,callback) {
+
+    const msg = { createdAt : new Date() };
+    const time = msg.createdAt.toLocaleString();
+
+    const menu = new MessageEmbed()
+    .setTitle('Menu')
+    .setColor('#f3f3f3')
+    .setFooter(time)
+    .addField('What you wanna see', '`profile`,`recentm`')
+    callback(menu)
+}
+exports.DotaMenu = DotaMenu;
