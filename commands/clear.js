@@ -9,7 +9,7 @@ module.exports = {
 
     async run (client, message, args) {
 
-        if(!message.member.hasPermission("MANAGE_MESSAGES")) return message.reply('you dont have perms to do that')
+        if(!message.member.hasPermission("MANAGE_MESSAGES")) return message.reply('You dont have perms to do that')
 
         const amount = args.join(" ");
 
@@ -17,11 +17,11 @@ module.exports = {
         .setTitle(`deleted ${amount} messages`)
         .setColor(`#f3f3f3`)
 
-        if(!amount) return message.reply('enter amount of messages that u wanna delete')
+        if(!amount) return message.reply('Enter amount of messages that you wanna delete')
 
-        if(amount > 100) return message.reply(`you cant delete more than 100 messages at once`)
+        if(amount > 100) return message.reply(`You cant delete more than 100 messages at once`)
 
-        if(amount < 1) return message.reply(`you cant delete 0 messages`)
+        if(amount < 1) return message.reply(`You cant delete 0 messages`)
 
         await message.channel.messages.fetch({limit: amount}).then(messages => {
             message.channel.bulkDelete(messages).then(() => {
