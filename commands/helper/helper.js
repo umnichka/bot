@@ -141,7 +141,7 @@ async function DotaProfile(SteamId32, callback) {
                     .addField('Wins', data2.win,true)
                     .addField('Lose',data2.lose,true)
                     .addField('Steam profile:',`[Click](${usersteam})`)
-                    .addField('Actions', '`back`')
+
 
                     callback(stats);
     }

@@ -12,6 +12,7 @@
     "bignumber.js": "^9.0.1",
     "discord.js": "^12.3.1",
     "es6-promise": "^4.2.8",
+    "faceit-js-api": "^0.3.3",
     "google-translate-api": "^2.3.0",
     "hltv-api": "^2.0.0",
     "isomorphic-fetch": "^3.0.0",

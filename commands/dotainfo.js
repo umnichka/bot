@@ -13,9 +13,9 @@ const time = msg.createdAt.toLocaleString();
 
 
 module.exports = {
-	name: 'dotap',
+	name: 'dota',
 	description: 'Shows information about dota user.',
-	usage: '!dotap <profileURL>',
+	usage: '!dota <profileURL>',
 	async run (client, message,args) {
 
         if (talkedRecently.has(message.author.id)) {
@@ -28,7 +28,10 @@ module.exports = {
         const collector = message.channel.createMessageCollector(filter, { time: 10000 });
         
 
-
+        if (!args[0]){
+            message.channel.send('Enter a steam profile')
+            return
+        }
         var steamLink = args[0];
         var steamID = steamLink.split('/')
         let requestUrl = "http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=11C25DD94021AB4F6607D25893C04D7D&vanityurl="
