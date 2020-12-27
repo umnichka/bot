@@ -20,7 +20,6 @@ module.exports = {
         }
 
         channel.createInvite({ unique: true, maxAge:  Aamount, maxUses: Uamount }).then(invite => {
-            message.reply(" Your invite link = https://discord.gg/" + invite.code)
 
             const invitelink = new Discord.MessageEmbed()
             .setTitle('Invite link created')

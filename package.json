@@ -16,6 +16,7 @@
     "google-translate-api": "^2.3.0",
     "hltv-api": "^2.0.0",
     "isomorphic-fetch": "^3.0.0",
+    "mongoose": "^5.11.8",
     "node-fetch": "^2.6.1",
     "request": "^2.88.2",
     "time-convert": "0.0.2",

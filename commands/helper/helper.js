@@ -1,11 +1,15 @@
 const heroData = require('./data/heroes.json');
 const modeData = require('./data/gamemodes.json');
+const country = require("./data/country.json")
 const request = require('request');
 const Discord = require('discord.js'); 
 const fetch = require("node-fetch");
 const { MessageEmbed } = require('discord.js');
 const bignumber = require('bignumber.js');
 const client = new Discord.Client();
+const Faceit = require("faceit-js-api");
+const faceIt = new Faceit("118dbece-03cd-4ec9-be31-66a168176c1f");
+
 
 function resultOfMatch(result) {
     if (result == true) {
@@ -161,3 +165,66 @@ async function DotaMenu(steamid32,callback) {
     callback(menu)
 }
 exports.DotaMenu = DotaMenu;
+
+async function FaceItMenu(faceItUName, callback){
+
+    playedCSGO = ['`CSGO`'];
+    playedDota = ['`Dota 2`'];
+    let steamurl = "https://steamcommunity.com/profiles/";
+
+
+    faceIt.getPlayerInfo(faceItUName).then(function (player) {
+
+       
+        var PlayerCountry = 'Unknown';
+        for (var tag of country['countrys']){
+            if (player.country.toUpperCase() == tag.abbreviation){
+                PlayerCountry = tag.country;
+            }
+        }
+        
+
+    let usersteam = steamurl + player.steamID;
+    const msg = { createdAt : new Date() };
+    const time = msg.createdAt.toLocaleString();
+
+
+        const facIt = new MessageEmbed()
+
+        .setTitle(`FaceIT player information`)
+        .setColor('#f3f3f3')
+
+        if(!player.avatar){
+            console.log('avatar false')
+        }
+        else {
+            console.log('avatar true')
+            facIt.setThumbnail(player.avatar)
+        }
+        facIt.setFooter(time)
+        .addField(`Nick `, player.nickname, true)
+        .addField('Country' , PlayerCountry, true)
+        if(typeof player.games.csgo === 'undefined'){
+            console.log('no csgo')
+        }
+        else {
+            facIt.addField('Games', playedCSGO,true)
+        }
+        if (typeof player.games.dota2 === 'undefined') {
+            console.log('no dota2')
+        }
+        else {
+            facIt.addField('Games', playedDota,true)
+        }
+        facIt.addField('Steam profile', `[Click](${usersteam})`)
+        .addField('FaceIT',`[Click](${player.faceitUrl})`,true)
+
+        callback(facIt)
+
+
+    })
+        
+
+
+}
+exports.FaceItMenu = FaceItMenu;
