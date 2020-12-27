@@ -8,7 +8,7 @@ const { MessageEmbed } = require('discord.js');
 const bignumber = require('bignumber.js');
 const client = new Discord.Client();
 const Faceit = require("faceit-js-api");
-const faceIt = new Faceit("118dbece-03cd-4ec9-be31-66a168176c1f");
+const faceIt = new Faceit(process.env.faceit);
 
 
 function resultOfMatch(result) {
