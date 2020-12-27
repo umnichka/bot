@@ -48,4 +48,4 @@ client.on("message", async message => {
       }
   }
 })
-client.login(token) // process.env.token) 
+client.login(process.env.token) // process.env.token) 
