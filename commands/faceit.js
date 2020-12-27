@@ -26,9 +26,8 @@ module.exports = {
 
         faceItUName = args[0];
         console.log(args[0])
-        playedCSGO = [];
-        playedDota = [];
-        playerAvatar = [];
+        playedCSGO = ['`CSGO`'];
+        playedDota = ['`Dota 2`'];
         let steamurl = "https://steamcommunity.com/profiles/";
 
 
@@ -42,40 +41,39 @@ module.exports = {
                 }
             }
             
-            if(typeof player.games.csgo === 'undefined'){
-                playedCSGO.push('')
-            }
-            else {
-                playedCSGO.push('`CSGO`')
-            }
-            if (typeof player.games.dota2 === 'undefined') {
-                playedDota.push('')
-            }
-            else {
-                playedDota.push('`Dota 2`')
-            }
-            if(!player.avatar){
-                playerAvatar.push('')
-            }
-            else {
-                playerAvatar.push(player.avatar)
-            }
 
-            
         let usersteam = steamurl + player.steamID;
         const msg = { createdAt : new Date() };
         const time = msg.createdAt.toLocaleString();
-            
+
 
             const facIt = new MessageEmbed()
 
             .setTitle(`FaceIT player information`)
-            .setThumbnail(playerAvatar)
-            .setFooter(time)
+
+            if(!player.avatar){
+                console.log('avatar false')
+            }
+            else {
+                console.log('avatar true')
+                facIt.setThumbnail(player.avatar)
+            }
+            facIt.setFooter(time)
             .addField(`Nick `, player.nickname, true)
             .addField('Country' , PlayerCountry, true)
-            .addField('Games', playedCSGO + playedDota, true)
-            .addField('Steam profile', `[Click](${usersteam})`)
+            if(typeof player.games.csgo === 'undefined'){
+                console.log('no csgo')
+            }
+            else {
+                facIt.addField('Games', playedCSGO,true)
+            }
+            if (typeof player.games.dota2 === 'undefined') {
+                console.log('no dota2')
+            }
+            else {
+                facIt.addField('Games', playedDota,true)
+            }
+            facIt.addField('Steam profile', `[Click](${usersteam})`)
             .addField('FaceIT',`[Click](${player.faceitUrl})`,true)
             
 
