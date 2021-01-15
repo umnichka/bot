@@ -24,7 +24,7 @@ module.exports = {
 
 
 
-        const filter = message => message.content === 'profile' || 'recentm'
+        const filter = message => message.content === 'profile' || 'rm'
         const collector = message.channel.createMessageCollector(filter, { time: 10000 });
         
 
@@ -84,10 +84,13 @@ module.exports = {
                             message.channel.send(stats)
                         })
                     }
-                    else if (message.content === 'recentm') {
+                    else if (message.content === 'rm') {
                         helper.recentMatch(steamid32, function(embed){
                             message.channel.send(embed)
                         })
+                    }
+                    else if (message.content === 'back') {
+                        message.channel.send(menu);
                     }
                 })
             });

@@ -9,8 +9,8 @@ const helper = require('./helper/helper.js');
 
 module.exports = {
 	name: 'faceit',
-	description: 'Shows information about dota user.',
-	usage: '!dota <profileURL>',
+	description: 'Shows information about FaceIt user.',
+	usage: '!faceit <Nick>',
 	async run (client, message,args) {
 
         if (talkedRecently.has(message.author.id)) {

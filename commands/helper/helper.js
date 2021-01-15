@@ -8,7 +8,7 @@ const { MessageEmbed } = require('discord.js');
 const bignumber = require('bignumber.js');
 const client = new Discord.Client();
 const Faceit = require("faceit-js-api");
-const faceIt = new Faceit(process.env.faceit);
+const faceIt = new Faceit('118dbece-03cd-4ec9-be31-66a168176c1f');
 
 
 function resultOfMatch(result) {
@@ -101,6 +101,7 @@ async function recentMatch(steamid32, callback)
             .addField('Kills', kills, true)
             .addField('Deaths', deaths , true)
             .addField('Assists', assist, true)
+            .addField('Actions', '`back`')
 
             callback(embed);
 
@@ -110,14 +111,33 @@ async function recentMatch(steamid32, callback)
 exports.recentMatch = recentMatch;
 
 async function DotaProfile(SteamId32, callback) {
-    
+
+
     let requestUrl = "http://api.opendota.com/api/players/";
     let url = requestUrl.concat(SteamId32);
     let wlURL = url.concat('/wl')
+    let avgRequest = `http://api.opendota.com/api/players/${SteamId32}/matches?limit=10`;
     let response = await fetch(url);
     let data = await response.json();
     let response2 = await fetch(wlURL);
     let data2 = await response2.json();
+    let avgResponse = await fetch(avgRequest);
+    let avgdata = await avgResponse.json();
+
+        totalK = 0;
+        totalD = 0;
+        totalA = 0;
+        z = 10;
+            for (let i = 0; i < 9; i++) {
+                totalK += avgdata[i].kills;
+                totalD += avgdata[i].deaths;
+                totalA += avgdata[i].assists;
+        }
+        let avgK = totalK / z;
+        let avgD = totalD / z;
+        let avgA = totalA / z;
+
+
         console.log(url);
         
         if ( typeof data == 'undefined') {
@@ -133,19 +153,30 @@ async function DotaProfile(SteamId32, callback) {
             let leaderboardrank = data.leaderboard_rank;
             let avatar = data.profile.avatarmedium;
             let username = data.profile.personaname;
+            
+
+            let numberOfGames = data2.win + data2.lose;
+            var percentWin = (data2.win / numberOfGames) * 100;
+
 
             const stats = new MessageEmbed()
 
                     .setThumbnail(avatar)
                     .setColor('f3f3f3')
                     .setTitle(`${username} profile`)
+                    .addField('Profile','---------',true)
+                    .addField('Winrate','---------',true)
+                    .addField('AVG stats by 10 last matches','---------',true)
                     .addField('MMR~ ', mmr,true)
-                    .addField('Leaderboard rank ', leaderboardrank,true )
-                    .addField('Dota tier ', rank,true)
                     .addField('Wins', data2.win,true)
+                    .addField('AVG kills', avgK,true)
+                    .addField('LB ranks ', leaderboardrank,true)
                     .addField('Lose',data2.lose,true)
-                    .addField('Steam profile:',`[Click](${usersteam})`)
-
+                    .addField('AVG deaths',avgD,true)
+                    .addField('Dota tier ', rank,true)
+                    .addField('Winrate',percentWin.toFixed(2)+'%',true)
+                    .addField('AVG assists',avgA,true)
+                    .addField('Actions', '`back`')
 
                     callback(stats);
     }
@@ -161,7 +192,7 @@ async function DotaMenu(steamid32,callback) {
     .setTitle('Menu')
     .setColor('#f3f3f3')
     .setFooter(time)
-    .addField('What you wanna see', '`profile`,`recentm`')
+    .addField('What you wanna see', '`profile`,`rm`')
     callback(menu)
 }
 exports.DotaMenu = DotaMenu;
@@ -228,3 +259,5 @@ async function FaceItMenu(faceItUName, callback){
 
 }
 exports.FaceItMenu = FaceItMenu;
+
+
