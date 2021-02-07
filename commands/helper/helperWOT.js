@@ -3,16 +3,17 @@ const fetch = require("node-fetch");
 const { MessageEmbed } = require('discord.js');
 
 
-async function accountStats(accid, callback) {
+async function accountStats(accid,nickName,x,con,callback) {
 
-    let requestUrl = "https://api.worldoftanks.ru/wot/account/info/?application_id=5303ac49029b8236b4af70fa1c2808e2&account_id=" + accid + '&fields=statistics.all';
+
+    const requestUrl = "https://api.worldoftanks.ru/wot/account/info/?application_id=5303ac49029b8236b4af70fa1c2808e2&account_id=" + accid + '&fields=statistics.all';
     let response = await fetch(requestUrl);
     let wot = await response.json();
 
-    let request4bb = "https://api.worldoftanks.ru/wot/account/achievements/?application_id=cf2f77dfac4977080aa7c182250a5736&account_id=" + accid + '&fields=achievements';
+    const request4bb = "https://api.worldoftanks.ru/wot/account/achievements/?application_id=cf2f77dfac4977080aa7c182250a5736&account_id=" + accid + '&fields=achievements';
     let responseBB = await fetch(request4bb)
     let bb = await responseBB.json();
-
+    
     let totalB = wot.data[accid].statistics.all.battles;
     let maxDMG = wot.data[accid].statistics.all.max_damage;
     let maxXP = wot.data[accid].statistics.all.max_xp;
@@ -23,11 +24,35 @@ async function accountStats(accid, callback) {
     var whoBB2020 = []; 
     var textavgDMG = [];
 
+    if(totalB < 50) {
+
+        const embed = new MessageEmbed()
+        .setTitle('Ошибка')
+        .setDescription('Количество боев меньше 50')
+        callback(embed)
+    } else {
+
+    con.query(`SELECT * FROM players WHERE ID = '${accid}'`, (err,rows ) => {
+        if(err) throw err;
+        let sql;
+
+        if(rows.length < 1) {
+            sql = `INSERT INTO players (id,name,dmg,battles) VALUES ('${accid}', '${nickName}','${avgDMG}', '${totalB}')`
+        } else {
+            let dmg = rows[0].dmg
+            sql = `UPDATE players SET dmg = ${(dmg/dmg - 1) + avgDMG} WHERE ID = '${accid}' AND NAME = '${nickName}' AND BATTLES = '${totalB}'`
+        }
+        con.query(sql,console.log);
+
+    });
+
+
     if ( avgDMG <= 500 && avgDMG < 750) {
 
         rashet =  '```diff\n'  + avgDMG + '\n```' 
 
         textavgDMG.push(rashet)
+
     } else if (avgDMG > 750 && avgDMG < 1000 ) {
 
         rashet =  '```HTTP\n' + avgDMG + '\n```' 
@@ -65,7 +90,6 @@ async function accountStats(accid, callback) {
     } else {
         whoBB2020.push('Не участвовал')
     }
-
 
     const stats = new MessageEmbed()
     .setColor('f3f3f3')
@@ -115,10 +139,14 @@ async function accountStats(accid, callback) {
         },
     )
 
+    if (x=1) {
     callback(stats);
+    } else if (x=2) 
+    { 
+        console.log('upd')
+    }
     
-
-
+    }
 }
 
 exports.accountStats = accountStats;

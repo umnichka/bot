@@ -1,13 +1,11 @@
 const Discord = require('discord.js'); 
 const client = new Discord.Client(); 
-
 const fs = require('fs');  
 const { join } = require('path');
-
 const config = require('./config.json');
-
 const prefix = (config.prefix)
 const token = (config.token)
+const mysql = require("mysql")
 
 
 client.commands= new Discord.Collection();
@@ -27,6 +25,26 @@ client.on('ready', () => {
   console.log('bot is ready');
 });
 
+var con = mysql.createConnection({
+
+  host: process.env.host,
+  user: process.env.user,
+  password: process.env.password,
+  database: process.env.database
+});
+
+con.connect(err => {
+
+  if(err) throw err;
+  console.log('mysql connected')
+
+  })
+
+  setInterval(function () {
+    con.query(`SELECT 1`);
+}, 5000);
+
+
 client.on("message", async message => {
 
   if(message.author.bot) return;
@@ -41,7 +59,7 @@ client.on("message", async message => {
 
 
       try {
-          client.commands.get(command).run(client, message, args);
+          client.commands.get(command).run(client, message, args, con);
 
       } catch (error){
           console.error(error);

@@ -23,6 +23,7 @@ module.exports = {
     } else {
 
 
+        let whoSended = message.author.id;
 
         const filter = message => message.content === 'profile' || 'rm'
         const collector = message.channel.createMessageCollector(filter, { time: 10000 });
@@ -78,18 +79,18 @@ module.exports = {
             message.channel.send(menu).then(() => {
                 collector.on('collect', message => {
                     console.log(message.content)
-                    if (message.content === 'profile')
+                    if (message.content === 'profile' && message.author.id === whoSended)
                     {
                         helper.DotaProfile(steamid32, function (stats){
                             message.channel.send(stats)
                         })
                     }
-                    else if (message.content === 'rm') {
+                    else if (message.content === 'rm' && message.author.id === whoSended) {
                         helper.recentMatch(steamid32, function(embed){
                             message.channel.send(embed)
                         })
                     }
-                    else if (message.content === 'back') {
+                    else if (message.content === 'back' && message.author.id === whoSended) {
                         message.channel.send(menu);
                     }
                 })

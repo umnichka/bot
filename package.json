@@ -19,8 +19,12 @@
     "hltv-api": "^2.0.0",
     "isomorphic-fetch": "^3.0.0",
     "mongoose": "^5.11.8",
+    "mysql": "^2.18.1",
     "node-fetch": "^2.6.1",
+    "pg": "^8.5.1",
+    "python": "0.0.4",
     "request": "^2.88.2",
+    "sqlite": "^4.0.19",
     "time-convert": "0.0.2",
     "vk-openapi": "^0.1.2"
   }

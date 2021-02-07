@@ -2,6 +2,7 @@ const Discord = require ('discord.js')
 const { MessageEmbed } = require('discord.js');
 const fetch = require("node-fetch");
 const helper = require('./helper/helperWOT.js');
+const talkedRecently = new Set();
 
 
 module.exports = {
@@ -9,7 +10,15 @@ module.exports = {
     description: "World Of Tanks player stats",
     usage: "!wot",
 
-    async run (client, message , args) {
+    async run (client, message , args,con) {
+
+
+        if (talkedRecently.has(message.author.id)) {
+            message.reply("Подождите 5 секунд чтобы воспользоваться командой снова.");
+    } else {
+
+        let whoSended = message.author.id;
+        let x = 1;
 
         if (!args[0]) {
             message.channel.send('Введите никнейм')
@@ -20,42 +29,37 @@ module.exports = {
         let wot = await response.json();
             console.log(TeamUrl);
 
-
-
         if (wot.meta.count != '1') {
             message.channel.send('Неверный никнейм'); 
     
         } else { 
 
-
-            const filter = (msg, user) => {
-                 return msg.content === 'стата' || msg.content === 'бб2020' || msg.author.id === user.id
+            const filter = m => {
+                 return m.content === 'Стата' || 'Танки '
             };
 
             const collector = message.channel.createMessageCollector(filter, { time: 10000 });
-
             const nickName = wot.data[0].nickname;
             const accId = wot.data[0].account_id
-
             const msg = { createdAt : new Date() };
             const time = msg.createdAt.toLocaleString();
 
             console.log(nickName);
             const wotStart = new MessageEmbed()
             .setTitle(nickName)
-            .addField('Выберите дальнейшее действие', '`стата`')
+            .addField('Выберите дальнейшее действие', '`Стата` `Танки`')
             .setFooter(time)
             message.channel.send(wotStart).then(() => {
                 collector.on('collect', message => {
-                    console.log(message.content)
-                    if (message.content === 'стата')
+                    if (message.content === 'Стата' && message.author.id === whoSended)
                     {
-                        helper.accountStats(accId, function (stats){
+                        helper.accountStats(accId,nickName,x,con, function (stats){
                             message.channel.send(stats)
                         })
-                        }
+                    }
                     })
-            })
+                })
+            }
         }
     }
 }
