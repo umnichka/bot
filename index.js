@@ -27,10 +27,10 @@ client.on('ready', () => {
 
 var con = mysql.createConnection({
 
-  host: process.env.host,
-  user: process.env.user,
-  password: process.env.password,
-  database: process.env.database
+  host: process.env.host, // process.env.host
+  user: process.env.user, // process.env.user
+  password: process.env.password, // process.env.password
+  database: process.env.database // process.env.database
 });
 
 con.connect(err => {
@@ -66,4 +66,4 @@ client.on("message", async message => {
       }
   }
 })
-client.login(process.env.token) // process.env.token) 
+client.login(process.env.token)  // process.env.token) 
