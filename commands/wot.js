@@ -44,18 +44,26 @@ module.exports = {
             const msg = { createdAt : new Date() };
             const time = msg.createdAt.toLocaleString();
 
-            console.log(nickName);
             const wotStart = new MessageEmbed()
             .setTitle(nickName)
             .addField('Выберите дальнейшее действие', '`Стата` `Танки`')
+            .setFooter(time)
+
+            const wotWait = new MessageEmbed()
+            .setTitle('Расчет начат')
+            .addField('Ожидайте', `Идет расчет статистики для ${nickName}`)
             .setFooter(time)
             message.channel.send(wotStart).then(() => {
                 collector.on('collect', message => {
                     if (message.content === 'Стата' && message.author.id === whoSended)
                     {
+                        message.channel.send(wotWait)
+                        helper.wn8calc(accId,con)
+                        setTimeout(function(){
                         helper.accountStats(accId,nickName,x,con, function (stats){
                             message.channel.send(stats)
                         })
+                    }, 5000);
                     }
                     })
                 })
