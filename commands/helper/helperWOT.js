@@ -30,44 +30,8 @@ async function accountStats(accid,nickName,x,con,callback) {
         let avgDMG = (wot.data[accid].statistics.all.damage_dealt / totalB).toFixed();
         let avgXP = wot.data[accid].statistics.all.battle_avg_xp;
         let pWin = (wot.data[accid].statistics.all.wins / totalB) * 100;
-        let maxKills = wot.data[accid].statistics.all.max_frags;
         var whoBB2020 = []; 
-        var textavgDMG = [];
 
-
-
-
-    if ( avgDMG <= 500 && avgDMG < 750) {
-
-        rashet =  '```diff\n'  + avgDMG + '\n```' 
-
-        textavgDMG.push(rashet)
-
-    } else if (avgDMG > 750 && avgDMG < 1000 ) {
-
-        rashet =  '```HTTP\n' + avgDMG + '\n```' 
-
-        textavgDMG.push(rashet)
-
-    } else if (avgDMG > 1000 && avgDMG < 1800 ) {
-
-        rashet =  '```diff\n'  + '!' + avgDMG + '\n```' 
-
-        textavgDMG.push(rashet)
-
-    } else if (avgDMG > 1800 && avgDMG < 2500) {
-
-        rashet =  '```md\n'+ '#' + avgDMG + '\n```' 
-
-        textavgDMG.push(rashet)
-
-    } else if (avgDMG > 2500) {
-
-        rashet =  '```xl\n'+ "'" + avgDMG + "'" + '\n```' 
-
-        textavgDMG.push(rashet)
-
-    }
     if (bb.data[accid].achievements.medalBobKorbenDallas === 1) {
 
         whoBB2020.push('KorbenTeam')
@@ -81,15 +45,12 @@ async function accountStats(accid,nickName,x,con,callback) {
         whoBB2020.push('Не участвовал')
     }
 
-        con.query(`SELECT AVG(wn8) as wn8Sum FROM ‘${accid}’`, (err,rows ) => {
+        con.query(`SELECT SUM(wn8) as wn8Sum FROM ‘${accid}’`, (err,rows ) => {
             if (err) throw err;
-            let wn8sum = rows[0].wn8Sum
-
-            con.query (`SELECT COUNT(*) as count FROM ‘${accid}’`, (err, tanks) => {
+            let wn8Sum = rows[0].wn8Sum
                 if (err) throw err;
-                tAmount = tanks[0].count;
-                let wn8 = (wn8sum / tAmount) / 2
-                console.log(wn8,wn8sum,tAmount)
+                let wn8 = (wn8Sum / totalB).toFixed();
+                console.log(wn8,wn8Sum)
                 const stats = new MessageEmbed()
                 .setColor('f3f3f3')
                 .setTitle(`Статистика`)
@@ -121,12 +82,12 @@ async function accountStats(accid,nickName,x,con,callback) {
                     },
                     {
                         name: "Средний урон",
-                        value: textavgDMG,
+                        value: avgDMG,
                         inline: true
                     },
                     {
                         name: "WN8",
-                        value: '`' + wn8.toFixed() + '`',
+                        value: '`' + wn8 + '`',
                         inline:true
                     },
                     {
@@ -143,14 +104,12 @@ async function accountStats(accid,nickName,x,con,callback) {
                     if(rows.length < 1) {
                         sql = `INSERT INTO players (id,name,dmg,battles,wn8) VALUES ('${accid}', '${nickName}','${avgDMG}', '${totalB}', '${wn8}')`
                     } else {
-                        let dmg = rows[0].dmg
-                        sql = `UPDATE players SET dmg = '${(dmg/dmg - 1) + avgDMG}', battles = '${totalB}', wn8 = '${wn8}' WHERE ID = '${accid}'`
+                        sql = `UPDATE players SET dmg = '${avgDMG}', battles = '${totalB}', wn8 = '${wn8}' WHERE ID = '${accid}'`
                     }
                     con.query(sql);
             
                 });
                 return callback(stats)
-            })
         })
     }
 }
@@ -166,12 +125,9 @@ async function wn8calc(accid,con) {
 
     let countRR = wn8.data[accid].length;
 
-    var tankID = [];
-    var WN8 = [];
-
     con.query(`SELECT *
     FROM information_schema.tables
-    WHERE table_schema = 'heroku_4ebbd35da0db6b2'
+    WHERE table_schema = 'freedbtech_wotstats'
     AND table_name = '‘${accid}’'
     LIMIT 1`, (err, rows) => {
         if (err) throw err;
@@ -187,29 +143,32 @@ async function wn8calc(accid,con) {
 
     for(let y = 0; y < countRR; y++) {
 
-        tankID.push(wn8.data[accid][y].tank_id)
+        if(wn8.data[accid][y].all.wins === 0 && wn8.data[accid][y].all.losses === 0){
+            console.log('')
+        } else { 
+        let tankID = wn8.data[accid][y].tank_id
+
+        con.query(`SELECT * FROM wn8exp WHERE IDNum = '${tankID}'`, (err,rows) => {
+            console.log(tankID)
 
 
-        con.query(`SELECT * FROM wn8exp WHERE IDNum = '${tankID[y]}'`, (err,rows) => {
-
-            if (err) throw err;
+            let sql;
 
             let winsTanks = wn8.data[accid][y].all.wins;
             let lossesTanks = wn8.data[accid][y].all.losses;
             let battlesTanks = winsTanks + lossesTanks;
-            let Spot = wn8.data[accid][y].all.spotted;
-            let avgSpot = (Spot / battlesTanks).toFixed(2);
+            let spot = wn8.data[accid][y].all.spotted;
+            let avgSpot = (spot / battlesTanks).toFixed(2);
             let avgDMGtank = (wn8.data[accid][y].all.damage_dealt / battlesTanks).toFixed(3);
             let avgFrag = (wn8.data[accid][y].all.frags / battlesTanks).toFixed(3)
             let avgWinRate = ((winsTanks / battlesTanks) * 100).toFixed(2);
             let avgDef = (wn8.data[accid][y].all.dropped_capture_points / battlesTanks).toFixed(3);
-
-
             let expDef = rows[0].expDef;
             let expFrag = rows[0].expFrag;
             let expDmg = rows[0].expDamage;
             let expWinRate = rows[0].expWinRate;
             let expSpot = rows[0].expSpot;
+            
 
             const rDAMAGE = avgDMGtank     / expDmg
             const rSPOT   = avgSpot    / expSpot 
@@ -224,24 +183,115 @@ async function wn8calc(accid,con) {
             let rDEFc    = Math.max(0, Math.min(rDAMAGEc + 0.1, (rDEF    - 0.10) / (1 - 0.10)))
 
             let rashet = ((980 * rDAMAGEc + 210 * rDAMAGEc * rFRAGc + 155 * rFRAGc * rSPOTc + 75 * rDEFc * rFRAGc + 145 * Math.min(1.8,rWINc)) * battlesTanks).toFixed()
-            
 
-            WN8.push(rashet)
-        })
-    }
-    for (let x = 0; x < countRR; x++) {
             con.query(`SELECT * FROM ‘${accid}’`, (err,rows ) => {
                 if (err) throw err;
 
             if(rows.length < 1) {
-                sql = `INSERT INTO ‘${accid}’ (tankID,wn8) VALUES ('${tankID[x]}','${WN8[x]}')`
+                sql = `INSERT INTO ‘${accid}’ (tankID,wn8) VALUES ('${tankID}','${rashet}')`
             } else {
-                sql = `UPDATE ‘${accid}’ SET wn8 = ${WN8[x]} WHERE tankID = ${tankID[x]}`
+                sql = `UPDATE ‘${accid}’ SET wn8 = ${rashet} WHERE tankID = ${tankID}`
             }
             con.query(sql);
+            })
         })
     }
+}
 }
 
 
 exports.wn8calc = wn8calc;
+
+
+async function accstats(accid,con,callback) {
+
+    const requestUrl = "https://api.worldoftanks.ru/wot/account/info/?application_id=5303ac49029b8236b4af70fa1c2808e2&account_id=" + accid + '&fields=statistics.all';
+    let response = await fetch(requestUrl);
+    let wot = await response.json();
+
+    const request4bb = "https://api.worldoftanks.ru/wot/account/achievements/?application_id=cf2f77dfac4977080aa7c182250a5736&account_id=" + accid + '&fields=achievements';
+    let responseBB = await fetch(request4bb);
+    let bb = await responseBB.json();
+    let maxDMG = wot.data[accid].statistics.all.max_damage;
+    let maxXP = wot.data[accid].statistics.all.max_xp;
+    let avgXP = wot.data[accid].statistics.all.battle_avg_xp;
+    var whoBB2020 = [];
+
+    con.query(`SELECT * FROM players WHERE id = ${accid}`, (err,rows)=>{
+
+        if (err) {
+            callback('```ERROR WITH ACCID//PLAYER NICK```')
+            throw err;
+        } else {
+
+            let avgDmg = rows[0].dmg;
+            let battles = rows[0].battles;
+            let pWin = (wot.data[accid].statistics.all.wins / battles) * 100;
+            let wn8 = rows[0].wn8
+
+    
+        if (bb.data[accid].achievements.medalBobKorbenDallas === 1) {
+    
+            whoBB2020.push('KorbenTeam')
+        } else if (bb.data[accid].achievements.medalBobYusha === 1) {
+            whoBB2020.push('YushaTeam')
+        } else if (bb.data[accid].achievements.medalBobLebwa === 1) {
+            whoBB2020.push('LebwaTeam')
+        } else if (bb.data[accid].achievements.medalBobAmway921 === 1) {
+            whoBB2020.push('AmwayTeam')
+        } else {
+            whoBB2020.push('Не участвовал')
+        }
+
+        const stats = new MessageEmbed()
+        .setColor('f3f3f3')
+        .setTitle(`Статистика`)
+        .addFields(
+            {
+                name: "Количество боев",
+                value: '`'+ battles + '`',
+                inline: true
+            },
+            {
+                name: "Максимальное кол-во опыта",
+                value: '`' + maxXP + '`',
+                inline: true
+            },
+            {
+                name: "Максимальный урон",
+                value: '`' + maxDMG +'`',
+                inline: true
+            },
+            {
+                name: "Процент побед",
+                value: '`' + pWin.toFixed(2) + '`',
+                inline: false
+            },
+            {
+                name: "Средний опыт",
+                value: '`' + avgXP + '`' ,
+                inline: true
+            },
+            {
+                name: "Средний урон",
+                value: '`' + avgDmg + '`' ,
+                inline: true
+            },
+            {
+                name: "WN8",
+                value: '`' + wn8 + '`',
+                inline:true
+            },
+            {
+    
+                name: "Битва блогеров 2020",
+                value: '`' + whoBB2020 + '`' ,
+                inline: true
+            },
+        )
+        callback(stats)
+        }
+    })
+}
+
+exports.accstats = accstats;

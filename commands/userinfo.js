@@ -7,6 +7,11 @@ module.exports = {
 
     async run (client, message , args) {
 
+        let x = 1;
+        if (x = 1) { 
+            message.channel.send('Command disabled')
+        }
+
         let user = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || message.member;
 
         const embed = new MessageEmbed()

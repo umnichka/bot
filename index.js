@@ -24,13 +24,12 @@ client.on("error", console.error);
 client.on('ready', () => {
   console.log('bot is ready');
 });
-
 var con = mysql.createConnection({
 
-  host: 'process.env.host', // process.env.host
-  user: 'process.env.user', // process.env.user
-  password: 'process.env.password', // process.env.password
-  database: 'process.env.database' // process.env.database
+  host: 'eu-cdbr-west-03.cleardb.net', // process.env.host
+  user: 'bcdcd59827cadf', // process.env.user
+  password: '57a572e0', // process.env.password
+  database: 'heroku_4ebbd35da0db6b2' // process.env.database
 });
 
 con.connect(err => {
@@ -59,11 +58,11 @@ client.on("message", async message => {
 
 
       try {
-          client.commands.get(command).run(client, message, args, con);
+          client.commands.get(command).run(client, message, args,con);
 
       } catch (error){
           console.error(error);
       }
   }
 })
-client.login(process.env.token)  // process.env.token) 
+client.login(token)  // process.env.token) 

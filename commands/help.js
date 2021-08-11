@@ -8,7 +8,14 @@ module.exports = {
 	description: 'Information about commands',
 	usage: '!help [command name]',
 	async run (client, message,args) {
+
+		let x = 1;
+        if (x = 1) { 
+            message.channel.send('Command disabled')
+        }
+		
 		const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
 
 
 		let CCname = [];

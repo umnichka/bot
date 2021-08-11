@@ -5,9 +5,12 @@ module.exports = {
     description: "Топ игроков по урону",
     usage: "!top [значение]",
 
-    async run (client, message , args,con) {
+    async run (client, message , args) {
 
-
+        let x = 1;
+        if (x = 1) { 
+            message.channel.send('Command disabled')
+        }
 
         let type = args[0];
 

@@ -18,6 +18,11 @@ module.exports = {
 	usage: '!dota <profileURL>',
 	async run (client, message,args) {
 
+        let x = 1;
+        if (x = 1) { 
+            message.channel.send('Command disabled')
+        }
+
         if (talkedRecently.has(message.author.id)) {
             message.reply("Wait 5 secs before using this command again.");
     } else {
